@@ -1,4 +1,4 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math
+package ca.jonathanfritz.ktgame.engine.math
 
 data class Vector2D (val x: Float, val y: Float) {
     operator fun plus(other: Vector2D): Vector2D {

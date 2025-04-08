@@ -1,4 +1,4 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.colour
+package ca.jonathanfritz.ktgame.engine.colour
 
 class RGBColour(red: Int, green: Int, blue: Int) {
 

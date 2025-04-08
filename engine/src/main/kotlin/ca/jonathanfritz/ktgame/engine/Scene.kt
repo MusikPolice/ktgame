@@ -1,8 +1,8 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine
+package ca.jonathanfritz.ktgame.engine
 
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.Entity
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.time.Nanos
+import ca.jonathanfritz.ktgame.engine.entity.Entity
+import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
+import ca.jonathanfritz.ktgame.engine.time.Nanos
 
 /**
  * A scene is a container for the world, all entities that inhabit it, and the game logic that drives it
@@ -14,9 +14,7 @@ abstract class Scene {
     /**
      * Loads any resources that the scene or its entities require, initializes entities
      */
-    open fun loadResources(nvg: NVG) {
-        // default implementation does nothing
-    }
+    abstract fun loadResources(nvg: NVG)
 
     /**
      * Draws all entities to the nvg context in no particular order
@@ -36,9 +34,7 @@ abstract class Scene {
     /**
      * Unloads any resources that the scene or its entities require, cleans up entities
      */
-    open fun unloadResources() {
-        entities.removeAll { true }
-    }
+    abstract fun unloadResources()
 
     // when called, entity is not colliding with targets, but if it stepped forward one more nano, it would be
     // goal here is to resolve the collision by modifying each entity's position and velocity such that they start

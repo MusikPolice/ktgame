@@ -1,11 +1,11 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components
+package ca.jonathanfritz.ktgame.engine.entity.components
 
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.Scene
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.Entity
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math.Point2D
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math.Vector2D
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.time.Nanos
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.time.toSeconds
+import ca.jonathanfritz.ktgame.engine.Scene
+import ca.jonathanfritz.ktgame.engine.entity.Entity
+import ca.jonathanfritz.ktgame.engine.math.Point2D
+import ca.jonathanfritz.ktgame.engine.math.Vector2D
+import ca.jonathanfritz.ktgame.engine.time.Nanos
+import ca.jonathanfritz.ktgame.engine.time.toSeconds
 
 /**
  * Represents a component that contains location and movement information for an entity.

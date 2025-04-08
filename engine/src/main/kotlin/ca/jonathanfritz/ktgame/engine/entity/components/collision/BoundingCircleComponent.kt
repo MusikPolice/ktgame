@@ -1,8 +1,8 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.collision
+package ca.jonathanfritz.ktgame.engine.entity.components.collision
 
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.Entity
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math.Point2D
+import ca.jonathanfritz.ktgame.engine.entity.Entity
+import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
+import ca.jonathanfritz.ktgame.engine.math.Point2D
 
 class BoundingCircleComponent(
     entity: Entity,

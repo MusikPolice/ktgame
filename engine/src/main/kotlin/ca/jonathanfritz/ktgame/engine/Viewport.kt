@@ -1,4 +1,4 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine
+package ca.jonathanfritz.ktgame.engine
 
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback

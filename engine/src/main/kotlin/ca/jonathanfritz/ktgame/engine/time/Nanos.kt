@@ -1,4 +1,4 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.time
+package ca.jonathanfritz.ktgame.engine.time
 
 typealias Nanos = Long
 typealias Seconds = Float

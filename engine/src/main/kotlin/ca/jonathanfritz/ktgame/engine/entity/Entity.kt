@@ -1,12 +1,11 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity
+package ca.jonathanfritz.ktgame.engine.entity
 
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.NVG
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.Scene
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingComponent
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.Component
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.NanoVGRenderComponent
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math.Point2D
-import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.time.Nanos
+import ca.jonathanfritz.ktgame.engine.NVG
+import ca.jonathanfritz.ktgame.engine.Scene
+import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingComponent
+import ca.jonathanfritz.ktgame.engine.entity.components.Component
+import ca.jonathanfritz.ktgame.engine.math.Point2D
+import ca.jonathanfritz.ktgame.engine.time.Nanos
 import kotlin.reflect.KClass
 
 data class Entity (
