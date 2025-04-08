@@ -1,12 +1,16 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.collision
+package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.collision
 
 import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.Entity
+import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
 import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math.Point2D
 
 class BoundingCircleComponent(
-    private val entity: Entity,
+    entity: Entity,
     val radius: Float
-): BoundingComponent() {
+): BoundingComponent(entity) {
+
+    private val position = (entity.getComponent(LocationComponent::class) as? LocationComponent)?.position
+        ?: throw IllegalStateException("BoundingCircleComponent requires a LocationComponent")
 
     /**
      * Checks for a collision between this bounding circle and the specified entity
@@ -15,10 +19,8 @@ class BoundingCircleComponent(
     override fun isCollidingWith(target: Entity, positionOverride: Point2D?): Boolean {
         target.getBoundingComponent()?.let { targetBoundingComponent ->
             if (targetBoundingComponent is BoundingCircleComponent) {
-                val myPosition = positionOverride ?: this.entity.getPosition()
-                val targetPosition = target.getPosition()
-                if (myPosition != null && targetPosition != null) {
-                    val distance = (myPosition - targetPosition).length
+                target.getPosition()?.let { targetPosition ->
+                    val distance = (position - targetPosition).length
                     return distance <= (radius + targetBoundingComponent.radius)
                 }
             } else {
@@ -31,5 +33,13 @@ class BoundingCircleComponent(
         // if the target entity lacks a bounding component or either entity lacks a position component, they cannot
         // possibly collide with one another
         return false
+    }
+
+    private fun Entity.getBoundingComponent(): BoundingComponent? {
+        return this.getComponent(BoundingComponent::class) as? BoundingComponent
+    }
+
+    private fun Entity.getPosition(): Point2D? {
+        return (this.getComponent(LocationComponent::class) as? LocationComponent)?.position
     }
 }

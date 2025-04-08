@@ -1,6 +1,7 @@
-package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity
+package ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.components
 
 import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.Scene
+import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.entity.Entity
 import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math.Point2D
 import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.math.Vector2D
 import ca.jonathanfritz.ktgame.ca.jonathanfritz.ktgame.engine.time.Nanos
@@ -18,7 +19,7 @@ data class LocationComponent(
     var position: Point2D = Point2D(0f, 0f),
     var velocity: Vector2D = Vector2D(0f, 0f),
     var acceleration: Vector2D = Vector2D(0f, 0f)
-): Component() {
+): Component(entity) {
 
     override fun update(delta: Nanos, scene: Scene) {
         // apply physics to move the entity along its trajectory
