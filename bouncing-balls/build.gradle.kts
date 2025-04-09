@@ -10,6 +10,9 @@ repositories {
 }
 
 dependencies {
+
+    implementation(project(":engine"))
+
     testImplementation(kotlin("test"))
 }
 
@@ -17,5 +20,7 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(22)
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }

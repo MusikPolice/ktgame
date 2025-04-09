@@ -9,8 +9,10 @@ class BoundingCircleComponent(
     val radius: Float
 ): BoundingComponent(entity) {
 
-    private val position = (entity.getComponent(LocationComponent::class) as? LocationComponent)?.position
-        ?: throw IllegalStateException("BoundingCircleComponent requires a LocationComponent")
+    private val position: Point2D by lazy {
+        entity.getComponent(LocationComponent::class)?.position
+            ?: throw IllegalStateException("BoundingCircleComponent requires a LocationComponent")
+    }
 
     /**
      * Checks for a collision between this bounding circle and the specified entity

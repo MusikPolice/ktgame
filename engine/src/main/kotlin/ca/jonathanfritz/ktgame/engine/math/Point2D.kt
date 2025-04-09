@@ -7,4 +7,8 @@ data class Point2D (val x: Float, val y: Float) {
     }
 
     operator fun plus(vector2D: Vector2D): Point2D = Point2D(x + vector2D.x, y + vector2D.y)
+
+    companion object {
+        fun atOrigin() = Point2D(0f, 0f)
+    }
 }

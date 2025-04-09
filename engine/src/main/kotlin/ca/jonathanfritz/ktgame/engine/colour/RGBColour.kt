@@ -1,5 +1,8 @@
 package ca.jonathanfritz.ktgame.engine.colour
 
+import org.lwjgl.nanovg.NVGColor
+import org.lwjgl.nanovg.NanoVG
+
 class RGBColour(red: Int, green: Int, blue: Int) {
 
     // an rgb colour can be packed into three bytes
@@ -14,4 +17,6 @@ class RGBColour(red: Int, green: Int, blue: Int) {
     val red = bytes[0].toInt()
     val green = bytes[1].toInt()
     val blue = bytes[2].toInt()
+
+    fun toNVGColor(): NVGColor = NanoVG.nvgRGB(bytes[0], bytes[1], bytes[2], NVGColor.create())
 }

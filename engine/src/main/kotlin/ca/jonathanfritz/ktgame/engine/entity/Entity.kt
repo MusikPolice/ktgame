@@ -8,14 +8,21 @@ import ca.jonathanfritz.ktgame.engine.math.Point2D
 import ca.jonathanfritz.ktgame.engine.time.Nanos
 import kotlin.reflect.KClass
 
-data class Entity (
-    val components: List<Component>
-) {
+abstract class Entity {
+
     // internally, components are expressed in a map for fast lookup
     // this does mean that each Entity can have at most one component of each type
-    private val componentMap: Map<KClass<out Component>, Component> = components.associateBy { it::class }
+    val componentMap: MutableMap<KClass<out Component>, Component> = mutableMapOf()
 
-    private val boundingComponent = getComponent(BoundingComponent::class) as? BoundingComponent
+    // commonly used components can be cached for faster access at runtime
+    private val boundingComponent: BoundingComponent? by lazy {
+        getComponent(BoundingComponent::class) as? BoundingComponent
+    }
+
+    fun addComponent(component: Component): Entity {
+        componentMap[component::class] = component
+        return this
+    }
 
     fun update(delta: Nanos, scene: Scene) {
         // TODO: does the order of components matter? maybe we need a priority system?
@@ -31,8 +38,32 @@ data class Entity (
     /**
      * Returns the component of the specified type, or null if it does not exist
      */
-    fun getComponent(kClass: KClass<out Component>): Component? =
-        componentMap.getOrDefault(kClass, null)
+    /*fun getComponent(kClass: KClass<out Component>): Component? {
+        // in the ideal case, the specified kClass is a key in the map
+        return componentMap.getOrElse(kClass) {
+            // but it could be a subclass of one of the keys in the map
+            // in that case, we need to check each entry in the map
+            componentMap.entries.firstOrNull { (_, instance) ->
+                instance::class.isInstance(kClass)
+            }?.value.also {
+                // also cache it for future fast lookups?
+                componentMap[kClass] = (it as kClass)
+            }
+        }
+    }*/
+
+    inline fun <reified T : Component> getComponent(kClass: KClass<out T>): T? {
+        // in the ideal case, the specified kClass is a key in the map
+        return componentMap.getOrElse(kClass) {
+            // but it could be a subclass of one of the keys in the map
+            // in that case, we need to check each entry in the map
+            componentMap.values.firstOrNull { instance ->
+                kClass.isInstance(instance)
+            }?.also {
+                componentMap[kClass] = (it as T)
+            }
+        } as? T
+    }
 
     /**
      * Returns true if this entity is colliding with the target entity
@@ -40,5 +71,18 @@ data class Entity (
      */
     fun isCollidingWith(target: Entity, positionOverride: Point2D? = null): Boolean {
         return boundingComponent?.isCollidingWith(target, positionOverride) ?: false
+    }
+
+    companion object {
+        /**
+         * Helper function for creating an instance of a subtype of Entity that has one or more components
+         */
+        fun <T:Entity> create(constructor: () -> T, vararg components: (Entity) -> Component): T {
+            val entity = constructor()
+            components.forEach { component ->
+                entity.addComponent(component(entity))
+            }
+            return entity
+        }
     }
 }

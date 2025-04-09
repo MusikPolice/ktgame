@@ -1,0 +1,42 @@
+package ca.jonathanfritz.ktgame.bouncingballs.entities
+
+import ca.jonathanfritz.ktgame.engine.NVG
+import ca.jonathanfritz.ktgame.engine.colour.RGBColour
+import ca.jonathanfritz.ktgame.engine.entity.Entity
+import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
+import ca.jonathanfritz.ktgame.engine.entity.components.NanoVGRenderComponent
+import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingCircleComponent
+import ca.jonathanfritz.ktgame.engine.math.Point2D
+import ca.jonathanfritz.ktgame.engine.math.Vector2D
+import org.lwjgl.nanovg.NanoVG
+
+class Ball private constructor(): Entity() {
+
+    companion object {
+
+        /**
+         * Factory method for creating an instance of Ball with one or more components
+         */
+        fun create(
+            radius: Float,
+            colour: RGBColour,
+            position: Point2D = Point2D.atOrigin(),
+            velocity: Vector2D = Vector2D.zero(),
+            acceleration: Vector2D = Vector2D.zero()
+        ): Ball {
+            return create(
+                { Ball() },
+                { entity -> BoundingCircleComponent(entity, radius) },
+                { entity -> LocationComponent(entity, position, velocity, acceleration) },
+                { entity -> object: NanoVGRenderComponent(entity, colour) {
+                        override fun render(nvg: NVG) {
+                            NanoVG.nvgBeginPath(nvg)
+                            NanoVG.nvgCircle(nvg, location.position.x, location.position.y, (bounding as BoundingCircleComponent).radius)
+                            NanoVG.nvgFillColor(nvg, colour.toNVGColor())
+                        }
+                    }
+                }
+            )
+        }
+    }
+}

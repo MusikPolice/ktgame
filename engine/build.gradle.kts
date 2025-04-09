@@ -17,7 +17,7 @@ dependencies {
     implementation("org.lwjgl:lwjgl-glfw:$lwjglVersion")
     implementation("org.lwjgl:lwjgl-opengl:$lwjglVersion")
     implementation("org.lwjgl:lwjgl-stb:$lwjglVersion")
-    implementation("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
+    api("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
 
     // we need windows-specific native libraries
     runtimeOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-windows")
@@ -26,6 +26,10 @@ dependencies {
     runtimeOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-windows")
     runtimeOnly("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-windows")
 
+    // we need logging to the console at runtime
+    api("io.github.oshai:kotlin-logging-jvm:7.0.3")
+    api("org.slf4j:slf4j-simple:2.0.3")
+
     testImplementation(kotlin("test"))
 }
 
@@ -33,5 +37,7 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(22)
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
 }
