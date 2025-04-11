@@ -24,7 +24,11 @@ data class LocationComponent(
     override fun update(delta: Nanos, scene: Scene) {
         // apply physics to move the entity along its trajectory
         // TODO: what about gravity and/or friction? other forces?
-        val (newVelocity, newPosition) = applyAcceleration(delta)
+        val (newVelocity, newPosition) = calculateAcceleration(delta)
+        if (newPosition == position) {
+            // no movement, so nothing to do
+            return
+        }
 
         // check to see if any collisions would occur if we moved the entity to the newly calculated position
         val collisions = entity.isColliding(scene, newPosition)
@@ -38,7 +42,7 @@ data class LocationComponent(
             // walk delta back to find the position of the entity just before the collision
             // TODO: a binary search would likely be more efficient here
             for (midDelta in delta - 1 downTo 0) {
-                val (midVelocity, midPosition) = applyAcceleration(midDelta)
+                val (midVelocity, midPosition) = calculateAcceleration(midDelta)
 
                 // check to see if any collisions would occur if we moved the entity to the newly calculated position
                 val midCollisions = entity.isColliding(scene, midPosition)
@@ -57,7 +61,7 @@ data class LocationComponent(
         }
     }
 
-    private fun applyAcceleration(delta: Nanos): Pair<Vector2D, Point2D> {
+    private fun calculateAcceleration(delta: Nanos): Pair<Vector2D, Point2D> {
         val newVelocity = velocity + (acceleration * delta.toSeconds())
         val newPosition = position + (newVelocity * delta.toSeconds())
         return Pair(newVelocity, newPosition)
