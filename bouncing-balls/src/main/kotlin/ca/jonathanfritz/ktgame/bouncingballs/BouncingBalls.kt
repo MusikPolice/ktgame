@@ -23,12 +23,12 @@ class BouncingBalls: Scene() {
 
     override fun loadResources(nvg: NVG) {
         entities.addAll(
-            initializeBalls(100)
+            initializeBalls(5)
         )
     }
 
     private fun initializeBalls(num: Int): List<Ball> {
-        val radius = 5
+        val radius = 10
         val balls = mutableListOf<Ball>()
 
         do {

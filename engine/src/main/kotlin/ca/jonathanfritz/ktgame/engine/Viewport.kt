@@ -1,5 +1,6 @@
 package ca.jonathanfritz.ktgame.engine
 
+import ca.jonathanfritz.ktgame.engine.utils.FPSCounter
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback
@@ -7,6 +8,7 @@ import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.nanovg.NanoVGGL3
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
+import java.nio.file.Paths
 
 // the GLFW and NanoVG libraries use Longs to represent their respective context handles
 typealias NVG = Long
@@ -14,10 +16,13 @@ typealias Window = Long
 
 private val log = KotlinLogging.logger {}
 
+private const val FONT_COURIER = "courier"
+
 data class Viewport (val scene: Scene, val title: String, val width: Int, val height: Int): AutoCloseable {
 
     private val window: Window
     private val nvg: NVG
+    private val fpsCounter = FPSCounter(FONT_COURIER)
 
     init {
         log.debug { "Initializing Viewport..." }
@@ -59,12 +64,25 @@ data class Viewport (val scene: Scene, val title: String, val width: Int, val he
         log.debug { "Initialized NanoVG context $nvg" }
 
         log.debug { "Loading Scene Resources..." }
-        // load any resources needed for the scene
+        loadResources(nvg)
         scene.loadResources(nvg)
         log.debug { "Loaded Scene Resources" }
 
         // start the main loop
         mainLoop()
+    }
+
+    private fun loadResources(nvg: NVG) {
+        // courier is used for debug text
+        val relativePath = "/fonts/CourierPrime-Regular.ttf"
+        val resourcePath = this::class.java.getResource(relativePath)
+            ?: throw RuntimeException("Failed to load font $FONT_COURIER from $relativePath")
+        val absolutePath = Paths.get(resourcePath.toURI()).toString()
+        val font = NanoVG.nvgCreateFont(nvg, FONT_COURIER, absolutePath)
+        if (font == -1) {
+            throw RuntimeException("Failed to create NanoVG font $FONT_COURIER from $absolutePath")
+        }
+        log.debug { "Loaded font $FONT_COURIER from $absolutePath" }
     }
 
     private fun mainLoop() {
@@ -73,12 +91,15 @@ data class Viewport (val scene: Scene, val title: String, val width: Int, val he
 
         // loop until the window is closed
         while (!GLFW.glfwWindowShouldClose(window)) {
+            fpsCounter.update()
+
             // clear the frame buffer and begin a new frame
             glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
             NanoVG.nvgBeginFrame(nvg, width.toFloat(), height.toFloat(), 1f)
 
             // draw the scene
             scene.render(nvg)
+            fpsCounter.render(nvg)
 
             // end the frame and swap the buffers
             NanoVG.nvgEndFrame(nvg)

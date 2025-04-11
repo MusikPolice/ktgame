@@ -50,13 +50,15 @@ data class LocationComponent(
                     // the entity will collide with entities in prevStepCollisions at midDelta + 1
                     velocity = midVelocity
                     position = midPosition
-                    scene.handleCollision(entity, prevStepCollisions)
+                    entity.handleCollision(prevStepCollisions)
+
+                    // collision handled, we're done here
+                    return
                 } else {
                     // record any collisions that occur at this step
                     // this will give us a list of collisions that would occur if time moved forward by 1 nanosecond
                     prevStepCollisions = midCollisions
                 }
-
             }
         }
     }
