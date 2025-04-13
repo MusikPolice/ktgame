@@ -4,7 +4,9 @@ import ca.jonathanfritz.ktgame.engine.NVG
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NanoVG
 
-class FPSCounter(private val fontName: String) {
+class FPSCounter(
+    private val fontName: String,
+) {
     private var lastTime: Long = System.nanoTime()
     private var frameCount: Int = 0
     private var fps: Int = 0

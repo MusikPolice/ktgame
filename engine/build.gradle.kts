@@ -9,22 +9,34 @@ repositories {
     mavenCentral()
 }
 
-val lwjglVersion = "3.2.3"
+val lwjglVersion = "3.3.6"
+val lwjglNatives = "natives-windows"
 
 dependencies {
-    // lwjgl is our interface to opengl
-    implementation("org.lwjgl:lwjgl:$lwjglVersion")
-    implementation("org.lwjgl:lwjgl-glfw:$lwjglVersion")
-    implementation("org.lwjgl:lwjgl-opengl:$lwjglVersion")
-    implementation("org.lwjgl:lwjgl-stb:$lwjglVersion")
-    api("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
+    // mostly generated with https://www.lwjgl.org/customize
+    // there's a high level description of each available library here https://github.com/LWJGL/lwjgl3
+    // the lgwgl wiki is at https://github.com/LWJGL/lwjgl3-wiki/wiki
+    api(platform("org.lwjgl:lwjgl-bom:$lwjglVersion"))
 
-    // we need windows-specific native libraries
-    runtimeOnly("org.lwjgl:lwjgl:$lwjglVersion:natives-windows")
-    runtimeOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion:natives-windows")
-    runtimeOnly("org.lwjgl:lwjgl-opengl:$lwjglVersion:natives-windows")
-    runtimeOnly("org.lwjgl:lwjgl-stb:$lwjglVersion:natives-windows")
-    runtimeOnly("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-windows")
+    api("org.lwjgl", "lwjgl")
+    api("org.lwjgl", "lwjgl-freetype")
+    api("org.lwjgl", "lwjgl-glfw")
+    api("org.lwjgl", "lwjgl-nanovg")
+    api("org.lwjgl", "lwjgl-nuklear")
+    api("org.lwjgl", "lwjgl-openal")
+    api("org.lwjgl", "lwjgl-opengl")
+    api("org.lwjgl", "lwjgl-stb")
+    api("org.lwjgl", "lwjgl-yoga")
+
+    runtimeOnly("org.lwjgl", "lwjgl", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-freetype", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-glfw", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-nanovg", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-nuklear", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-openal", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-opengl", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-stb", classifier = lwjglNatives)
+    runtimeOnly("org.lwjgl", "lwjgl-yoga", classifier = lwjglNatives)
 
     // we need logging to the console at runtime
     api("io.github.oshai:kotlin-logging-jvm:7.0.3")

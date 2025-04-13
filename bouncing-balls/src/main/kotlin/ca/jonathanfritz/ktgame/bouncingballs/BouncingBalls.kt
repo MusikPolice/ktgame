@@ -12,8 +12,7 @@ import kotlin.random.Random
 
 private val log = KotlinLogging.logger {}
 
-class BouncingBalls: Scene() {
-
+class BouncingBalls : Scene() {
     private val width = 800
     private val height = 600
 
@@ -23,7 +22,7 @@ class BouncingBalls: Scene() {
 
     override fun loadResources(nvg: NVG) {
         entities.addAll(
-            initializeBalls(5)
+            initializeBalls(5),
         )
     }
 
@@ -32,30 +31,32 @@ class BouncingBalls: Scene() {
         val balls = mutableListOf<Ball>()
 
         do {
-            val colour = RGBColour(
-                Random.nextInt(0, 255),
-                Random.nextInt(0, 255),
-                Random.nextInt(0, 255)
-            )
+            val colour =
+                RGBColour(
+                    Random.nextInt(0, 255),
+                    Random.nextInt(0, 255),
+                    Random.nextInt(0, 255),
+                )
 
-            val position = Point2D(
-                Random.nextInt(radius, width - radius).toFloat(),
-                Random.nextInt(radius, height - radius).toFloat(),
-            )
+            val position =
+                Point2D(
+                    Random.nextInt(radius, width - radius).toFloat(),
+                    Random.nextInt(radius, height - radius).toFloat(),
+                )
 
             val minSpeed = -40
             val maxSpeed = 40
-            val velocity = Vector2D(
-                Random.nextInt(minSpeed, maxSpeed).toFloat(),
-                Random.nextInt(minSpeed, maxSpeed).toFloat()
-            )
+            val velocity =
+                Vector2D(
+                    Random.nextInt(minSpeed, maxSpeed).toFloat(),
+                    Random.nextInt(minSpeed, maxSpeed).toFloat(),
+                )
 
             val ball = Ball.create(radius.toFloat(), colour, position, velocity)
             if (balls.none { it.isCollidingWith(ball) }) {
                 balls.add(ball)
             }
-
-        } while(balls.size < num)
+        } while (balls.size < num)
 
         log.debug { "Initialized ${balls.size} balls" }
         return balls
@@ -65,7 +66,6 @@ class BouncingBalls: Scene() {
         entities.removeAll { true }
     }
 }
-
 
 fun main() {
     log.debug { "Starting Bouncing Balls..." }

@@ -18,10 +18,12 @@ data class LocationComponent(
     val entity: Entity,
     var position: Point2D = Point2D(0f, 0f),
     var velocity: Vector2D = Vector2D(0f, 0f),
-    var acceleration: Vector2D = Vector2D(0f, 0f)
-): Component(entity) {
-
-    override fun update(delta: Nanos, scene: Scene) {
+    var acceleration: Vector2D = Vector2D(0f, 0f),
+) : Component(entity) {
+    override fun update(
+        delta: Nanos,
+        scene: Scene,
+    ) {
         // apply physics to move the entity along its trajectory
         // TODO: what about gravity and/or friction? other forces?
         val (newVelocity, newPosition) = calculateAcceleration(delta)
@@ -73,11 +75,15 @@ data class LocationComponent(
      * Returns the list of entities that are colliding with the receiver entity
      * If provided, positionOverride will be used as the position of the receiver entity
      */
-    private fun Entity.isColliding(scene: Scene, positionOverride: Point2D? = null): List<Entity> =
-        scene.entities.filterNot { target ->
-            // don't check for collision with self
-            target == this
-        }.filter { target ->
-            this.isCollidingWith(target, positionOverride)
-        }
+    private fun Entity.isColliding(
+        scene: Scene,
+        positionOverride: Point2D? = null,
+    ): List<Entity> =
+        scene.entities
+            .filterNot { target ->
+                // don't check for collision with self
+                target == this
+            }.filter { target ->
+                this.isCollidingWith(target, positionOverride)
+            }
 }

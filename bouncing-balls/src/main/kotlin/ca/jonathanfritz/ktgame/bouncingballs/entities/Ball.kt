@@ -10,10 +10,8 @@ import ca.jonathanfritz.ktgame.engine.math.Point2D
 import ca.jonathanfritz.ktgame.engine.math.Vector2D
 import org.lwjgl.nanovg.NanoVG
 
-class Ball private constructor(): Entity() {
-
+class Ball private constructor() : Entity() {
     companion object {
-
         /**
          * Factory method for creating an instance of Ball with one or more components
          */
@@ -22,13 +20,14 @@ class Ball private constructor(): Entity() {
             colour: RGBColour,
             position: Point2D = Point2D.atOrigin(),
             velocity: Vector2D = Vector2D.zero(),
-            acceleration: Vector2D = Vector2D.zero()
-        ): Ball {
-            return create(
+            acceleration: Vector2D = Vector2D.zero(),
+        ): Ball =
+            create(
                 { Ball() },
                 { entity -> BoundingCircleComponent(entity, radius) },
                 { entity -> LocationComponent(entity, position, velocity, acceleration) },
-                { entity -> object: NanoVGRenderComponent(entity, colour) {
+                { entity ->
+                    object : NanoVGRenderComponent(entity, colour) {
                         override fun render(nvg: NVG) {
                             NanoVG.nvgBeginPath(nvg)
                             NanoVG.nvgCircle(nvg, location.position.x, location.position.y, radius)
@@ -36,8 +35,7 @@ class Ball private constructor(): Entity() {
                             NanoVG.nvgFill(nvg)
                         }
                     }
-                }
+                },
             )
-        }
     }
 }

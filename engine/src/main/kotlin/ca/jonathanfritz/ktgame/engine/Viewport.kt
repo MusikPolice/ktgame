@@ -2,13 +2,16 @@ package ca.jonathanfritz.ktgame.engine
 
 import ca.jonathanfritz.ktgame.engine.utils.FPSCounter
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.lwjgl.glfw.Callbacks
 import org.lwjgl.glfw.GLFW
 import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.nanovg.NanoVG
 import org.lwjgl.nanovg.NanoVGGL3
 import org.lwjgl.opengl.GL
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11
 import java.nio.file.Paths
+import kotlin.math.max
+import kotlin.system.measureNanoTime
 
 // the GLFW and NanoVG libraries use Longs to represent their respective context handles
 typealias NVG = Long
@@ -18,8 +21,12 @@ private val log = KotlinLogging.logger {}
 
 private const val FONT_COURIER = "courier"
 
-data class Viewport (val scene: Scene, val title: String, val width: Int, val height: Int): AutoCloseable {
-
+data class Viewport(
+    val scene: Scene,
+    val title: String,
+    val width: Int,
+    val height: Int,
+) : AutoCloseable {
     private val window: Window
     private val nvg: NVG
     private val fpsCounter = FPSCounter(FONT_COURIER)
@@ -75,8 +82,9 @@ data class Viewport (val scene: Scene, val title: String, val width: Int, val he
     private fun loadResources(nvg: NVG) {
         // courier is used for debug text
         val relativePath = "/fonts/CourierPrime-Regular.ttf"
-        val resourcePath = this::class.java.getResource(relativePath)
-            ?: throw RuntimeException("Failed to load font $FONT_COURIER from $relativePath")
+        val resourcePath =
+            this::class.java.getResource(relativePath)
+                ?: throw RuntimeException("Failed to load font $FONT_COURIER from $relativePath")
         val absolutePath = Paths.get(resourcePath.toURI()).toString()
         val font = NanoVG.nvgCreateFont(nvg, FONT_COURIER, absolutePath)
         if (font == -1) {
@@ -91,29 +99,33 @@ data class Viewport (val scene: Scene, val title: String, val width: Int, val he
 
         // loop until the window is closed
         while (!GLFW.glfwWindowShouldClose(window)) {
-            fpsCounter.update()
+            val loopTimeNanos =
+                measureNanoTime {
+                    fpsCounter.update()
 
-            // clear the frame buffer and begin a new frame
-            glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
-            NanoVG.nvgBeginFrame(nvg, width.toFloat(), height.toFloat(), 1f)
+                    // clear the frame buffer and begin a new frame
+                    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT or GL11.GL_DEPTH_BUFFER_BIT)
+                    NanoVG.nvgBeginFrame(nvg, width.toFloat(), height.toFloat(), 1f)
 
-            // draw the scene
-            scene.render(nvg)
-            fpsCounter.render(nvg)
+                    // draw the scene
+                    scene.render(nvg)
+                    fpsCounter.render(nvg)
 
-            // end the frame and swap the buffers
-            NanoVG.nvgEndFrame(nvg)
-            GLFW.glfwSwapBuffers(window)
+                    // end the frame and swap the buffers
+                    NanoVG.nvgEndFrame(nvg)
+                    GLFW.glfwSwapBuffers(window)
 
-            // poll for window events
-            GLFW.glfwPollEvents()
+                    // poll for window events
+                    GLFW.glfwPollEvents()
 
-            // update the scene
-            val now = System.nanoTime()
-            scene.update(now - lastTickNanos)
-            lastTickNanos = now
+                    // update the scene
+                    val now = System.nanoTime()
+                    scene.update(now - lastTickNanos)
+                    lastTickNanos = now
+                }
 
-            // TODO: sleep to cap frame rate?
+            // sleep for the remainder of the frame, targeting 60 FPS
+            Thread.sleep(max(0, (16_670_000 - loopTimeNanos) / 1_000_000))
         }
         log.debug { "Main loop stopped" }
     }
@@ -127,6 +139,10 @@ data class Viewport (val scene: Scene, val title: String, val width: Int, val he
         // cleanup nanovg
         NanoVGGL3.nvgDelete(nvg)
         log.debug { "Deleted NanoVG context $nvg" }
+
+        // free any window callbacks and destroy the window
+        Callbacks.glfwFreeCallbacks(window)
+        GLFW.glfwDestroyWindow(window)
 
         // cleanup GLFW
         GLFW.glfwTerminate()

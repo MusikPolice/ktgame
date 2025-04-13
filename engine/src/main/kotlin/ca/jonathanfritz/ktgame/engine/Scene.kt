@@ -7,7 +7,6 @@ import ca.jonathanfritz.ktgame.engine.time.Nanos
  * A scene is a container for the world, all entities that inhabit it, and the game logic that drives it
  */
 abstract class Scene {
-
     val entities: MutableList<Entity> = mutableListOf()
 
     /**

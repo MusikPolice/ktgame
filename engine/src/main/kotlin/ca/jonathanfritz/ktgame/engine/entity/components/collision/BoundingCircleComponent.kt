@@ -6,9 +6,8 @@ import ca.jonathanfritz.ktgame.engine.math.Point2D
 
 class BoundingCircleComponent(
     entity: Entity,
-    val radius: Float
-): BoundingComponent(entity) {
-
+    val radius: Float,
+) : BoundingComponent(entity) {
     private val position: Point2D by lazy {
         entity.getComponent(LocationComponent::class)?.position
             ?: throw IllegalStateException("BoundingCircleComponent requires a LocationComponent")
@@ -18,7 +17,10 @@ class BoundingCircleComponent(
      * Checks for a collision between this bounding circle and the specified entity
      * If provided, positionOverride will be used as the position of this bounding circle
      */
-    override fun isCollidingWith(target: Entity, positionOverride: Point2D?): Boolean {
+    override fun isCollidingWith(
+        target: Entity,
+        positionOverride: Point2D?,
+    ): Boolean {
         target.getBoundingComponent()?.let { targetBoundingComponent ->
             if (targetBoundingComponent is BoundingCircleComponent) {
                 target.getPosition()?.let { targetPosition ->
@@ -27,7 +29,7 @@ class BoundingCircleComponent(
                 }
             } else {
                 throw UnsupportedOperationException(
-                    "Collision detection between ${targetBoundingComponent::class} and BoundingCircleComponent is not supported."
+                    "Collision detection between ${targetBoundingComponent::class} and BoundingCircleComponent is not supported.",
                 )
             }
         }
@@ -37,11 +39,7 @@ class BoundingCircleComponent(
         return false
     }
 
-    private fun Entity.getBoundingComponent(): BoundingComponent? {
-        return this.getComponent(BoundingComponent::class) as? BoundingComponent
-    }
+    private fun Entity.getBoundingComponent(): BoundingComponent? = this.getComponent(BoundingComponent::class)
 
-    private fun Entity.getPosition(): Point2D? {
-        return (this.getComponent(LocationComponent::class) as? LocationComponent)?.position
-    }
+    private fun Entity.getPosition(): Point2D? = this.getComponent(LocationComponent::class)?.position
 }
