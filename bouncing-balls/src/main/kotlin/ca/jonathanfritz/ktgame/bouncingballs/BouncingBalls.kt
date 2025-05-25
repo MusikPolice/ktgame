@@ -22,7 +22,7 @@ class BouncingBalls : Scene() {
 
     override fun loadResources(nvg: NVG) {
         entities.addAll(
-            initializeBalls(5),
+            initializeBalls(20),
         )
     }
 
@@ -44,8 +44,8 @@ class BouncingBalls : Scene() {
                     Random.nextInt(radius, height - radius).toFloat(),
                 )
 
-            val minSpeed = -40
-            val maxSpeed = 40
+            val minSpeed = -100
+            val maxSpeed = 100
             val velocity =
                 Vector2D(
                     Random.nextInt(minSpeed, maxSpeed).toFloat(),
