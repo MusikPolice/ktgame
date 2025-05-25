@@ -1,7 +1,7 @@
 package ca.jonathanfritz.ktgame.engine
 
 import ca.jonathanfritz.ktgame.engine.entity.Entity
-import ca.jonathanfritz.ktgame.engine.time.Nanos
+import ca.jonathanfritz.ktgame.engine.time.Millis
 
 /**
  * A scene is a container for the world, all entities that inhabit it, and the game logic that drives it
@@ -25,7 +25,7 @@ abstract class Scene {
     /**
      * Updates each entity, advancing the game state by delta nanoseconds
      */
-    open fun update(delta: Nanos) {
+    open fun update(delta: Millis) {
         entities.forEach { it.update(delta, this) }
     }
 

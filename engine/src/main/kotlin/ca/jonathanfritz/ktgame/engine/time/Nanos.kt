@@ -1,6 +1,6 @@
 package ca.jonathanfritz.ktgame.engine.time
 
-typealias Nanos = Long
+typealias Millis = Long
 typealias Seconds = Float
 
-fun Nanos.toSeconds(): Seconds = this / 1_000_000_000.0f
+fun Millis.toSeconds(): Seconds = this / 1_000.0f

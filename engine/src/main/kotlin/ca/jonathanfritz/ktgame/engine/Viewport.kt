@@ -1,5 +1,6 @@
 package ca.jonathanfritz.ktgame.engine
 
+import ca.jonathanfritz.ktgame.engine.time.Millis
 import ca.jonathanfritz.ktgame.engine.utils.FPSCounter
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.lwjgl.glfw.Callbacks
@@ -11,7 +12,7 @@ import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11
 import java.nio.file.Paths
 import kotlin.math.max
-import kotlin.system.measureNanoTime
+import kotlin.system.measureTimeMillis
 
 // the GLFW and NanoVG libraries use Longs to represent their respective context handles
 typealias NVG = Long
@@ -48,6 +49,15 @@ data class Viewport(
         window = GLFW.glfwCreateWindow(width, height, title, 0L, 0L)
         if (window == 0L) {
             throw RuntimeException("Failed to create the GLFW window")
+        }
+
+        // set up a key callback. It will be called every time a key is pressed, repeated or released
+        // TODO: fire this event to the scene so the game can handle it
+        log.debug { "Registering keypress callbacks on window $window..." }
+        GLFW.glfwSetKeyCallback(window) { window: Long, key: Int, scancode: Int, action: Int, mods: Int ->
+            if (key == GLFW.GLFW_KEY_ESCAPE && action == GLFW.GLFW_RELEASE) {
+                GLFW.glfwSetWindowShouldClose(window, true) // we will detect this in the rendering loop
+            }
         }
 
         GLFW.glfwMakeContextCurrent(window)
@@ -94,13 +104,13 @@ data class Viewport(
     }
 
     private fun mainLoop() {
-        var lastTickNanos = System.nanoTime()
-        log.debug { "Started the main loop at $lastTickNanos" }
+        var lastTickMs: Millis = System.currentTimeMillis()
+        log.debug { "Started the main loop at $lastTickMs" }
 
         // loop until the window is closed
         while (!GLFW.glfwWindowShouldClose(window)) {
-            val loopTimeNanos =
-                measureNanoTime {
+            val loopTimeMs =
+                measureTimeMillis {
                     fpsCounter.update()
 
                     // clear the frame buffer and begin a new frame
@@ -119,13 +129,13 @@ data class Viewport(
                     GLFW.glfwPollEvents()
 
                     // update the scene
-                    val now = System.nanoTime()
-                    scene.update(now - lastTickNanos)
-                    lastTickNanos = now
+                    val now: Millis = System.currentTimeMillis()
+                    scene.update(now - lastTickMs)
+                    lastTickMs = now
                 }
 
             // sleep for the remainder of the frame, targeting 60 FPS
-            Thread.sleep(max(0, (16_670_000 - loopTimeNanos) / 1_000_000))
+            Thread.sleep(max(0f, (16.67 - loopTimeMs).toFloat()).toLong())
         }
         log.debug { "Main loop stopped" }
     }

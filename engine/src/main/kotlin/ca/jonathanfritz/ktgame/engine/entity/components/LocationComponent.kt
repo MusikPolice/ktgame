@@ -4,7 +4,7 @@ import ca.jonathanfritz.ktgame.engine.Scene
 import ca.jonathanfritz.ktgame.engine.entity.Entity
 import ca.jonathanfritz.ktgame.engine.math.Point2D
 import ca.jonathanfritz.ktgame.engine.math.Vector2D
-import ca.jonathanfritz.ktgame.engine.time.Nanos
+import ca.jonathanfritz.ktgame.engine.time.Millis
 import ca.jonathanfritz.ktgame.engine.time.toSeconds
 
 /**
@@ -21,7 +21,7 @@ data class LocationComponent(
     var acceleration: Vector2D = Vector2D(0f, 0f),
 ) : Component(entity) {
     override fun update(
-        delta: Nanos,
+        delta: Millis,
         scene: Scene,
     ) {
         // apply physics to move the entity along its trajectory
@@ -65,7 +65,7 @@ data class LocationComponent(
         }
     }
 
-    private fun calculateAcceleration(delta: Nanos): Pair<Vector2D, Point2D> {
+    private fun calculateAcceleration(delta: Millis): Pair<Vector2D, Point2D> {
         val newVelocity = velocity + (acceleration * delta.toSeconds())
         val newPosition = position + (newVelocity * delta.toSeconds())
         return Pair(newVelocity, newPosition)

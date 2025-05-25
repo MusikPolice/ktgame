@@ -6,7 +6,7 @@ import ca.jonathanfritz.ktgame.engine.entity.components.Component
 import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
 import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingComponent
 import ca.jonathanfritz.ktgame.engine.math.Point2D
-import ca.jonathanfritz.ktgame.engine.time.Nanos
+import ca.jonathanfritz.ktgame.engine.time.Millis
 import kotlin.reflect.KClass
 
 abstract class Entity {
@@ -55,7 +55,7 @@ abstract class Entity {
     }
 
     fun update(
-        delta: Nanos,
+        delta: Millis,
         scene: Scene,
     ) {
         // TODO: does the order of components matter? maybe we need a priority system?
