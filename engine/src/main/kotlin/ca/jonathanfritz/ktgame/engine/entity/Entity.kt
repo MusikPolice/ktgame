@@ -30,11 +30,6 @@ abstract class Entity {
         }
     }
 
-    // commonly used components can be cached for faster access at runtime
-    private val boundingComponent: BoundingComponent? by lazy {
-        getComponent(BoundingComponent::class)
-    }
-
     fun addComponent(component: Component): Entity {
         componentMap[component::class] = component
         return this
@@ -75,7 +70,13 @@ abstract class Entity {
     fun isCollidingWith(
         target: Entity,
         positionOverride: Point2D? = null,
-    ): Boolean = boundingComponent?.isCollidingWith(target, positionOverride) ?: false
+    ): Boolean {
+        val boundingComponent: BoundingComponent =
+            getComponent(BoundingComponent::class)
+                ?: throw IllegalStateException("Entity requires a BoundingComponent")
+
+        return boundingComponent.isCollidingWith(target, positionOverride)
+    }
 
     // when called, entity is not colliding with targets, but if it stepped forward one more nano, it would be
     // goal here is to resolve the collision by modifying each entity's position and velocity such that they start

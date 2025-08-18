@@ -24,8 +24,8 @@ class Ball private constructor() : Entity() {
         ): Ball =
             create(
                 { Ball() },
-                { entity -> BoundingCircleComponent(entity, radius) },
                 { entity -> LocationComponent(entity, position, velocity, acceleration) },
+                { entity -> BoundingCircleComponent(entity, radius) },
                 { entity ->
                     object : NanoVGRenderComponent(entity, colour) {
                         override fun render(nvg: NVG) {
