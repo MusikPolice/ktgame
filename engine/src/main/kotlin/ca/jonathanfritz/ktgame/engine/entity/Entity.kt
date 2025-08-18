@@ -43,19 +43,4 @@ abstract class Entity {
                 }
         } as? T
     }
-
-    // when called, entity is not colliding with targets, but if it stepped forward one more nano, it would be
-    // goal here is to resolve the collision by modifying each entity's position and velocity such that they start
-    // moving away from each other
-    open fun handleCollision(targets: List<Entity>) {
-        targets
-            .plus(this)
-            .mapNotNull {
-                it.getComponent(LocationComponent::class)
-            }.forEach { location ->
-                // as a temporary solve, just reverse the velocity of each entity
-                // TODO: consider the direction of the collision, mass of each entity, etc
-                location.velocity *= -1f
-            }
-    }
 }
