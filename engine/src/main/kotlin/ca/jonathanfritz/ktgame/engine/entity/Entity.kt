@@ -1,12 +1,7 @@
 package ca.jonathanfritz.ktgame.engine.entity
 
-import ca.jonathanfritz.ktgame.engine.NVG
-import ca.jonathanfritz.ktgame.engine.Scene
 import ca.jonathanfritz.ktgame.engine.entity.components.Component
 import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
-import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingComponent
-import ca.jonathanfritz.ktgame.engine.math.Point2D
-import ca.jonathanfritz.ktgame.engine.time.Millis
 import kotlin.reflect.KClass
 
 abstract class Entity {
@@ -47,35 +42,6 @@ abstract class Entity {
                     componentMap[kClass] = (it as T)
                 }
         } as? T
-    }
-
-    fun update(
-        delta: Millis,
-        scene: Scene,
-    ) {
-        // TODO: does the order of components matter? maybe we need a priority system?
-        componentMap.values.forEach { it.update(delta, scene) }
-    }
-
-    fun render(nvg: NVG) {
-        // TODO: does the rendering order matter? maybe we need a priority system?
-        // TODO: what about debug rendering? we might want a way to toggle rendering for some components
-        componentMap.values.forEach { it.render(nvg) }
-    }
-
-    /**
-     * Returns true if this entity is colliding with the target entity
-     * If specified, positionOverride will be used as the position of this entity
-     */
-    fun isCollidingWith(
-        target: Entity,
-        positionOverride: Point2D? = null,
-    ): Boolean {
-        val boundingComponent: BoundingComponent =
-            getComponent(BoundingComponent::class)
-                ?: throw IllegalStateException("Entity requires a BoundingComponent")
-
-        return boundingComponent.isCollidingWith(target, positionOverride)
     }
 
     // when called, entity is not colliding with targets, but if it stepped forward one more nano, it would be

@@ -28,9 +28,12 @@ class Ball private constructor() : Entity() {
                 { entity -> BoundingCircleComponent(entity, radius) },
                 { entity ->
                     object : NanoVGRenderComponent(entity, colour) {
-                        override fun render(nvg: NVG) {
+                        override fun render(
+                            nvg: NVG,
+                            locationComponent: LocationComponent,
+                        ) {
                             NanoVG.nvgBeginPath(nvg)
-                            NanoVG.nvgCircle(nvg, location.position.x, location.position.y, radius)
+                            NanoVG.nvgCircle(nvg, locationComponent.position.x, locationComponent.position.y, radius)
                             NanoVG.nvgFillColor(nvg, colour.nvgColor)
                             NanoVG.nvgFill(nvg)
                         }

@@ -1,6 +1,10 @@
 package ca.jonathanfritz.ktgame.engine
 
 import ca.jonathanfritz.ktgame.engine.entity.Entity
+import ca.jonathanfritz.ktgame.engine.entity.systems.CollisionSystem
+import ca.jonathanfritz.ktgame.engine.entity.systems.PhysicsSystem
+import ca.jonathanfritz.ktgame.engine.entity.systems.RenderSystem
+import ca.jonathanfritz.ktgame.engine.entity.systems.System
 import ca.jonathanfritz.ktgame.engine.time.Millis
 
 /**
@@ -8,6 +12,16 @@ import ca.jonathanfritz.ktgame.engine.time.Millis
  */
 abstract class Scene {
     val entities: MutableList<Entity> = mutableListOf()
+    private lateinit var systems: List<System>
+
+    fun loadSystems(nvg: NVG) {
+        systems =
+            listOf(
+                CollisionSystem(),
+                PhysicsSystem(),
+                RenderSystem(nvg),
+            )
+    }
 
     /**
      * Loads any resources that the scene or its entities require, initializes entities
@@ -18,15 +32,14 @@ abstract class Scene {
      * Draws all entities to the nvg context in no particular order
      */
     open fun render(nvg: NVG) {
-        // TODO: sort entities by z-index or some other criteria
-        entities.forEach { it.render(nvg) }
+        systems.forEach { it.render(this) }
     }
 
     /**
-     * Updates each entity, advancing the game state by delta nanoseconds
+     * Updates each system, advancing the game state by delta nanoseconds
      */
     open fun update(delta: Millis) {
-        entities.forEach { it.update(delta, this) }
+        systems.forEach { it.update(delta, this) }
     }
 
     /**

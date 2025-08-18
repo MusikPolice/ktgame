@@ -80,6 +80,10 @@ data class Viewport(
         }
         log.debug { "Initialized NanoVG context $nvg" }
 
+        log.debug { "Loading Systems..." }
+        scene.loadSystems(nvg)
+        log.debug { "Loaded Systems" }
+
         log.debug { "Loading Scene Resources..." }
         loadResources(nvg)
         scene.loadResources(nvg)

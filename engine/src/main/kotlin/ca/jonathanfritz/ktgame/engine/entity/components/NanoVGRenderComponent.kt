@@ -3,19 +3,15 @@ package ca.jonathanfritz.ktgame.engine.entity.components
 import ca.jonathanfritz.ktgame.engine.NVG
 import ca.jonathanfritz.ktgame.engine.colour.RGBColour
 import ca.jonathanfritz.ktgame.engine.entity.Entity
-import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingComponent
 
 abstract class NanoVGRenderComponent(
     entity: Entity,
-    colour: RGBColour,
+    val colour: RGBColour,
 ) : Component(entity) {
-    protected val location: LocationComponent =
-        entity.getComponent(LocationComponent::class)
-            ?: throw IllegalStateException("NanoVGRenderComponent requires a LocationComponent")
-
-    protected val bounding: BoundingComponent =
-        entity.getComponent(BoundingComponent::class)
-            ?: throw IllegalStateException("NanoVGRenderComponent requires a BoundingComponent")
-
-    abstract override fun render(nvg: NVG)
+    // this method is meant to be implemented by each Entity that should be rendered to the NanoVG context,
+    // allowing each entity to be drawn differently
+    abstract fun render(
+        nvg: NVG,
+        locationComponent: LocationComponent,
+    )
 }
