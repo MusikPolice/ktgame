@@ -7,6 +7,10 @@ import ca.jonathanfritz.ktgame.engine.Viewport
 import ca.jonathanfritz.ktgame.engine.colour.RGBColour
 import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
 import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingCircleComponent
+import ca.jonathanfritz.ktgame.engine.entity.systems.CollisionSystem
+import ca.jonathanfritz.ktgame.engine.entity.systems.PhysicsSystem
+import ca.jonathanfritz.ktgame.engine.entity.systems.RenderSystem
+import ca.jonathanfritz.ktgame.engine.entity.systems.System
 import ca.jonathanfritz.ktgame.engine.math.Point2D
 import ca.jonathanfritz.ktgame.engine.math.Vector2D
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -14,14 +18,15 @@ import kotlin.random.Random
 
 private val log = KotlinLogging.logger {}
 
-class BouncingBalls : Scene() {
-    private val width = 800
-    private val height = 600
-
-    fun run() {
-        // this is a bit inelegant - it'd be best if a Scene could create a Viewport?
-        Viewport(this, "Bouncing Balls", width, height).use {}
-    }
+class BouncingBalls(
+    viewport: Viewport,
+) : Scene(viewport) {
+    override fun loadSystems(nvg: NVG): List<System> =
+        listOf(
+            CollisionSystem(),
+            PhysicsSystem(),
+            RenderSystem(nvg),
+        )
 
     override fun loadResources(nvg: NVG) {
         entities.addAll(
@@ -43,8 +48,8 @@ class BouncingBalls : Scene() {
 
             val position =
                 Point2D(
-                    Random.nextInt(radius, width - radius).toFloat(),
-                    Random.nextInt(radius, height - radius).toFloat(),
+                    Random.nextInt(radius, viewport.width - radius).toFloat(),
+                    Random.nextInt(radius, viewport.height - radius).toFloat(),
                 )
 
             val minSpeed = -100
@@ -83,5 +88,7 @@ class BouncingBalls : Scene() {
 
 fun main() {
     log.debug { "Starting Bouncing Balls..." }
-    BouncingBalls().run()
+    Viewport("Bouncing Balls", 800, 600).use { viewport ->
+        BouncingBalls(viewport)
+    }
 }

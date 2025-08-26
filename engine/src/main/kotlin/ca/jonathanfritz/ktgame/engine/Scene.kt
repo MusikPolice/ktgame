@@ -1,27 +1,43 @@
 package ca.jonathanfritz.ktgame.engine
 
 import ca.jonathanfritz.ktgame.engine.entity.Entity
-import ca.jonathanfritz.ktgame.engine.entity.systems.CollisionSystem
-import ca.jonathanfritz.ktgame.engine.entity.systems.PhysicsSystem
-import ca.jonathanfritz.ktgame.engine.entity.systems.RenderSystem
 import ca.jonathanfritz.ktgame.engine.entity.systems.System
 import ca.jonathanfritz.ktgame.engine.time.Millis
+import io.github.oshai.kotlinlogging.KotlinLogging
+
+private val log = KotlinLogging.logger {}
 
 /**
  * A scene is a container for the world, all entities that inhabit it, and the game logic that drives it
  */
 abstract class Scene {
+    val viewport: Viewport
     val entities: MutableList<Entity> = mutableListOf()
-    private lateinit var systems: List<System>
+    private var systems: List<System>
 
-    fun loadSystems(nvg: NVG) {
-        systems =
-            listOf(
-                CollisionSystem(),
-                PhysicsSystem(),
-                RenderSystem(nvg),
-            )
+    constructor(viewport: Viewport) {
+        try {
+            this.viewport = viewport
+
+            log.debug { "Loading Systems..." }
+            systems = loadSystems(viewport.nvg)
+            log.debug { "Loaded Systems" }
+
+            log.debug { "Loading Scene Resources..." }
+            loadResources(viewport.nvg)
+            log.debug { "Loaded Scene Resources" }
+
+            // everything is loaded, loop until the window is closed
+            viewport.mainLoop(this)
+        } finally {
+            // always clean up scene resources
+            log.debug { "Unloading Scene Resources..." }
+            unloadResources()
+            log.debug { "Unloaded Scene Resources" }
+        }
     }
+
+    abstract fun loadSystems(nvg: NVG): List<System>
 
     /**
      * Loads any resources that the scene or its entities require, initializes entities

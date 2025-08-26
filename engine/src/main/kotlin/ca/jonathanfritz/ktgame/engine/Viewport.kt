@@ -23,14 +23,14 @@ private val log = KotlinLogging.logger {}
 private const val FONT_COURIER = "courier"
 
 data class Viewport(
-    val scene: Scene,
     val title: String,
     val width: Int,
     val height: Int,
 ) : AutoCloseable {
     private val window: Window
-    private val nvg: NVG
     private val fpsCounter = FPSCounter(FONT_COURIER)
+
+    val nvg: NVG
 
     init {
         log.debug { "Initializing Viewport..." }
@@ -80,20 +80,12 @@ data class Viewport(
         }
         log.debug { "Initialized NanoVG context $nvg" }
 
-        log.debug { "Loading Systems..." }
-        scene.loadSystems(nvg)
-        log.debug { "Loaded Systems" }
-
-        log.debug { "Loading Scene Resources..." }
-        loadResources(nvg)
-        scene.loadResources(nvg)
-        log.debug { "Loaded Scene Resources" }
-
-        // start the main loop
-        mainLoop()
+        log.debug { "Loading Viewport resources..." }
+        loadResources()
+        log.debug { "Loaded Viewport resources" }
     }
 
-    private fun loadResources(nvg: NVG) {
+    private fun loadResources() {
         // courier is used for debug text
         val relativePath = "/fonts/CourierPrime-Regular.ttf"
         val resourcePath =
@@ -107,7 +99,8 @@ data class Viewport(
         log.debug { "Loaded font $FONT_COURIER from $absolutePath" }
     }
 
-    private fun mainLoop() {
+    // TODO: maybe some of this needs to go into Scene?
+    fun mainLoop(scene: Scene) {
         var lastTickMs: Millis = System.currentTimeMillis()
         log.debug { "Started the main loop at $lastTickMs" }
 
@@ -145,11 +138,6 @@ data class Viewport(
     }
 
     override fun close() {
-        // cleanup scene resources
-        log.debug { "Unloading Scene Resources..." }
-        scene.unloadResources()
-        log.debug { "Unloaded Scene Resources" }
-
         // cleanup nanovg
         NanoVGGL3.nvgDelete(nvg)
         log.debug { "Deleted NanoVG context $nvg" }
