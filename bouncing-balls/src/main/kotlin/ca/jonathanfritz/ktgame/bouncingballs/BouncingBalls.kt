@@ -7,10 +7,11 @@ import ca.jonathanfritz.ktgame.engine.Viewport
 import ca.jonathanfritz.ktgame.engine.colour.RGBColour
 import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
 import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingCircleComponent
-import ca.jonathanfritz.ktgame.engine.entity.systems.CollisionSystem
+import ca.jonathanfritz.ktgame.engine.entity.systems.BoundingCircleCollisionSystem
 import ca.jonathanfritz.ktgame.engine.entity.systems.PhysicsSystem
 import ca.jonathanfritz.ktgame.engine.entity.systems.RenderSystem
 import ca.jonathanfritz.ktgame.engine.entity.systems.System
+import ca.jonathanfritz.ktgame.engine.entity.systems.ViewportBoundsCollisionSystem
 import ca.jonathanfritz.ktgame.engine.math.Point2D
 import ca.jonathanfritz.ktgame.engine.math.Vector2D
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -23,9 +24,10 @@ class BouncingBalls(
 ) : Scene(viewport) {
     override fun loadSystems(nvg: NVG): List<System> =
         listOf(
-            CollisionSystem(),
+            ViewportBoundsCollisionSystem(),
+            BoundingCircleCollisionSystem(),
             PhysicsSystem(),
-            RenderSystem(nvg),
+            RenderSystem(),
         )
 
     override fun loadResources(nvg: NVG) {

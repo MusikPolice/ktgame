@@ -26,6 +26,8 @@ data class Vector2D(
     // sometimes useful to convert a Vector2D to a Point2D, e.g. for rendering
     fun toPoint2D() = Point2D(this.x, this.y)
 
+    fun dot(other: Vector2D): Float = this.x * other.x + this.y * other.y
+
     companion object {
         fun zero() = Vector2D(0f, 0f)
     }

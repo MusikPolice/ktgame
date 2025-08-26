@@ -1,14 +1,11 @@
 package ca.jonathanfritz.ktgame.engine.entity.systems
 
-import ca.jonathanfritz.ktgame.engine.NVG
 import ca.jonathanfritz.ktgame.engine.Scene
 import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
 import ca.jonathanfritz.ktgame.engine.entity.components.NanoVGRenderComponent
 import ca.jonathanfritz.ktgame.engine.time.Millis
 
-class RenderSystem(
-    private val nvg: NVG,
-) : System {
+class RenderSystem : System {
     override fun update(
         delta: Millis,
         scene: Scene,
@@ -23,7 +20,7 @@ class RenderSystem(
             }.forEach { entity ->
                 val renderComponent = entity.getComponent(NanoVGRenderComponent::class)!!
                 val locationComponent = entity.getComponent(LocationComponent::class)!!
-                renderComponent.render(nvg, locationComponent)
+                renderComponent.render(scene.viewport.nvg, locationComponent)
             }
     }
 }
