@@ -1,8 +1,12 @@
 package ca.jonathanfritz.ktgame.engine.entity.systems
 
 import ca.jonathanfritz.ktgame.engine.Scene
+import ca.jonathanfritz.ktgame.engine.entity.Entity
 import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
+import ca.jonathanfritz.ktgame.engine.entity.components.PhysicsComponent
 import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingCircleComponent
+import ca.jonathanfritz.ktgame.engine.math.Point2D
+import ca.jonathanfritz.ktgame.engine.math.Vector2D
 import ca.jonathanfritz.ktgame.engine.time.Millis
 
 /**
@@ -18,63 +22,67 @@ class BoundingCircleCollisionSystem(
     ) {
         val entities =
             scene.entities.filter {
+                // TODO: generalize this into an .hasComponents(vararg KClass<Component>) or similar
                 it.getComponent(LocationComponent::class) != null &&
-                    it.getComponent(BoundingCircleComponent::class) != null
+                    it.getComponent(BoundingCircleComponent::class) != null &&
+                    it.getComponent(PhysicsComponent::class) != null
             }
 
         for (i in entities.indices) {
             // each entity is checked against all entities to the right of it in the list, avoiding unnecessary
             // double checks of pairs of entities
             for (j in i + 1 until entities.size) {
-                val a = entities[i]
-                val b = entities[j]
+                val ball1 = entities[i]
+                val ball2 = entities[j]
 
-                val aLoc = a.getComponent(LocationComponent::class)!!
-                val bLoc = b.getComponent(LocationComponent::class)!!
-                val aCircle = a.getComponent(BoundingCircleComponent::class)!!
-                val bCircle = b.getComponent(BoundingCircleComponent::class)!!
+                // draw a vector between ball centres
+                val delta = ball2.position() - ball1.position()
+                val distance = delta.length
+                val overlap = ball1.radius() + ball2.radius() - distance
 
-                val collisionVector = aLoc.position - bLoc.position
-                val distance = collisionVector.length
+                // if the balls aren't overlapping, there's no collision to resolve
+                if (overlap <= 0) continue
 
-                if (distance <= (aCircle.radius + bCircle.radius)) {
-                    val aVel = aLoc.velocity
-                    val bVel = bLoc.velocity
+                // normalizing delta gives us the direction of the collision event
+                // this also lets us find a perpendicular vector that is tangent to the collision normal
+                val normal = delta.normalize()
 
-                    val collisionNormal = collisionVector.normalize()
+                // project each ball's velocity onto the normal - essentially its speed in the direction of the collision
+                val v1 = ball1.velocity()
+                val v2 = ball2.velocity()
 
-                    // calculate the magnitude of velocity (i.e. speed) along the collision normal for each ball
-                    val aSpeed = Math.abs(aVel.dot(collisionNormal))
-                    val bSpeed = Math.abs(bVel.dot(collisionNormal))
-                    val totalSpeed = aSpeed + bSpeed
+                // if the balls are already moving apart, there's no need to continue
+                val velocityAlongNormal = (v2 - v1).dot(normal)
+                if (velocityAlongNormal > 0) continue
 
-                    val overlap = (aCircle.radius + bCircle.radius) - distance
-                    if (totalSpeed > 0f) {
-                        // move each ball proportionally to the other's speed
-                        // this assumes that the balls have equal mass
-                        aLoc.position -= collisionNormal * (overlap * (bSpeed / totalSpeed))
-                        bLoc.position += collisionNormal * (overlap * (aSpeed / totalSpeed))
-                    } else {
-                        // if both balls are completely still, just move them apart equally
-                        aLoc.position -= collisionNormal * (overlap / 2f)
-                        bLoc.position += collisionNormal * (overlap / 2f)
-                    }
+                // compute the impulse to apply to each ball, scaled relative to their masses
+                val m1 = ball1.mass()
+                val m2 = ball2.mass()
 
-                    // project the velocity of each ball onto the collision normal
-                    // this gives us the portion of the velocity that is aligned with the collision normal
-                    val aVelNormal = collisionNormal * aVel.dot(collisionNormal)
-                    val bVelNormal = collisionNormal * bVel.dot(collisionNormal)
+                // impulse magnitude
+                val j = ((-1 + dampingFactor) * velocityAlongNormal) / (1 / m1 + 1 / m2)
 
-                    // the rest of the velocity is perpendicular to the collision normal
-                    val aVelTangent = aVel - aVelNormal
-                    val bVelTangent = bVel - bVelNormal
+                // scale the collision normal by that impulse magnitude and add the result to each ball's velocity,
+                // scaled inverse to each ball's mass (i.e. the lighter ball is "kicked" more than the heavier ball)
+                val impulse = normal * j
+                ball1.getComponent(LocationComponent::class)!!.velocity -= impulse * (1 / m1)
+                ball2.getComponent(LocationComponent::class)!!.velocity += impulse * (1 / m2)
 
-                    // we add the two velocities together to get the new velocity after the collision, and apply a
-                    // damping factor to simulate energy loss
-                    aLoc.velocity = aVelTangent + bVelNormal * dampingFactor
-                    bLoc.velocity = bVelTangent + aVelNormal * dampingFactor
-                }
+                // finally, correct each ball's position to prevent them from sticking together when they overlap
+                val correctionRatio1 = (1 / m1) / (1 / m1 + 1 / m2)
+                val correctionRatio2 = (1 / m2) / (1 / m1 + 1 / m2)
+
+                ball1.getComponent(LocationComponent::class)!!.position = ball1.position() - normal * (overlap * correctionRatio1)
+                ball2.getComponent(LocationComponent::class)!!.position = ball2.position() + normal * (overlap * correctionRatio2)
             }
         }
     }
+
+    private fun Entity.position(): Point2D = this.getComponent(LocationComponent::class)!!.position
+
+    private fun Entity.radius(): Float = this.getComponent(BoundingCircleComponent::class)!!.radius
+
+    private fun Entity.velocity(): Vector2D = this.getComponent(LocationComponent::class)!!.velocity
+
+    private fun Entity.mass(): Float = this.getComponent(PhysicsComponent::class)!!.mass
 }

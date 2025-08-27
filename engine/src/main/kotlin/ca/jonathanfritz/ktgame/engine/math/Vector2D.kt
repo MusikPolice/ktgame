@@ -14,19 +14,19 @@ data class Vector2D(
 
     operator fun div(scalar: Float): Vector2D = Vector2D(x / scalar, y / scalar)
 
-    val length = kotlin.math.sqrt(x * x + y * y)
+    val length = kotlin.math.hypot(x, y)
 
     fun normalize(): Vector2D =
         if (length > 0) {
-            Vector2D(x / length, y / length)
+            Vector2D(x, y) / length
         } else {
             this
         }
 
+    fun dot(other: Vector2D): Float = this.x * other.x + this.y * other.y
+
     // sometimes useful to convert a Vector2D to a Point2D, e.g. for rendering
     fun toPoint2D() = Point2D(this.x, this.y)
-
-    fun dot(other: Vector2D): Float = this.x * other.x + this.y * other.y
 
     companion object {
         fun zero() = Vector2D(0f, 0f)

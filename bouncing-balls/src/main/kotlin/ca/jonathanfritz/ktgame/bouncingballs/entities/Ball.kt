@@ -5,6 +5,7 @@ import ca.jonathanfritz.ktgame.engine.colour.RGBColour
 import ca.jonathanfritz.ktgame.engine.entity.Entity
 import ca.jonathanfritz.ktgame.engine.entity.components.LocationComponent
 import ca.jonathanfritz.ktgame.engine.entity.components.NanoVGRenderComponent
+import ca.jonathanfritz.ktgame.engine.entity.components.PhysicsComponent
 import ca.jonathanfritz.ktgame.engine.entity.components.collision.BoundingCircleComponent
 import ca.jonathanfritz.ktgame.engine.math.Point2D
 import ca.jonathanfritz.ktgame.engine.math.Vector2D
@@ -21,10 +22,12 @@ class Ball private constructor() : Entity() {
             position: Point2D = Point2D.atOrigin(),
             velocity: Vector2D = Vector2D.zero(),
             acceleration: Vector2D = Vector2D.zero(),
+            mass: Float = 1f,
         ): Ball =
             create(
                 { Ball() },
                 { entity -> LocationComponent(entity, position, velocity, acceleration) },
+                { entity -> PhysicsComponent(entity, mass) },
                 { entity -> BoundingCircleComponent(entity, radius) },
                 { entity ->
                     object : NanoVGRenderComponent(entity) {
